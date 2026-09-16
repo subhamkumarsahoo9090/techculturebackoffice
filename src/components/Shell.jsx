@@ -9,6 +9,7 @@ const links = [
   { to: "/blogs", label: "Blog" },
   { to: "/careers", label: "Careers" },
   { to: "/team", label: "Team" },
+  { to: "/demos", label: "Demo bookings" },
 ];
 
 function ShellInner() {

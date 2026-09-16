@@ -13,13 +13,15 @@ export default function Dashboard() {
       api.blogs({ page: 1, limit: 1, status: "PUBLISHED" }),
       api.jobs({ page: 1, limit: 1 }),
       api.team(),
+      api.demos({ page: 1, limit: 1 }),
     ])
-      .then(([health, publishedBlogs, jobs, team]) => {
+      .then(([health, publishedBlogs, jobs, team, demos]) => {
         setStats({
           blogs: health.blogs ?? 0,
           jobs: health.jobs ?? jobs.total ?? 0,
           team: health.team ?? team.count ?? 0,
           published: publishedBlogs.total ?? 0,
+          demos: health.demos ?? demos.total ?? 0,
         });
       })
       .catch((err) => setError(err.message));
@@ -28,7 +30,7 @@ export default function Dashboard() {
   usePageTopNav({
     eyebrow: "Overview",
     title: "Dashboard",
-    subtitle: "Blog · Careers · Team",
+    subtitle: "Blog · Careers · Team · Demos",
     actions: null,
   });
 
@@ -54,6 +56,13 @@ export default function Dashboard() {
       to: "/team",
       tone: "from-slate-50 to-teal-50 border-slate-200",
     },
+    {
+      label: "Demo bookings",
+      value: stats.demos || 0,
+      hint: "Schedule Demo leads",
+      to: "/demos",
+      tone: "from-violet-50 to-orange-50 border-violet-100",
+    },
   ];
 
   return (
@@ -78,7 +87,7 @@ export default function Dashboard() {
         <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
           <Link key={c.label} to={c.to} className={`card border bg-gradient-to-br p-6 ${c.tone}`}>
             <p className="text-sm font-semibold text-slate-500">{c.label}</p>

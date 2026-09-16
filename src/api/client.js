@@ -84,5 +84,19 @@ export const api = {
   updateTeamMember: (id, body) =>
     request(`/api/team/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   deleteTeamMember: (id) => request(`/api/team/${id}`, { method: "DELETE" }),
+  demos: (params = {}) => {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        qs.set(key, String(value));
+      }
+    });
+    const query = qs.toString();
+    return request(`/api/demos${query ? `?${query}` : ""}`);
+  },
+  getDemo: (id) => request(`/api/demos/${id}`),
+  updateDemo: (id, body) =>
+    request(`/api/demos/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteDemo: (id) => request(`/api/demos/${id}`, { method: "DELETE" }),
   health: () => request("/api/health"),
 };

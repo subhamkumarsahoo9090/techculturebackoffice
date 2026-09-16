@@ -7,6 +7,7 @@ import Blogs from "./pages/Blogs";
 import BlogEditor from "./pages/BlogEditor";
 import Careers from "./pages/Careers";
 import Team from "./pages/Team";
+import DemoBookings from "./pages/DemoBookings";
 import NotFound from "./pages/NotFound";
 
 function PrivateRoute({ children }) {
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="blogs/:id/edit" element={<BlogEditor />} />
           <Route path="careers" element={<Careers />} />
           <Route path="team" element={<Team />} />
+          <Route path="demos" element={<DemoBookings />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
