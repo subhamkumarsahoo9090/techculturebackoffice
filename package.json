@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview --host 0.0.0.0 --port $PORT"
+    "start": "serve -s dist -l tcp://0.0.0.0:$PORT",
+    "preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
     "quill": "^2.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-quill-new": "^3.8.3",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "serve": "^14.2.6"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
