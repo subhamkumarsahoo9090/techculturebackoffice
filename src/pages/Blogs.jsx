@@ -1,25 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
-import Modal from "../components/Modal";
 import { usePageTopNav } from "../hooks/usePageTopNav";
 
 const PAGE_SIZE = 10;
 
-const emptyForm = {
-  title: "",
-  slug: "",
-  subtitle: "",
-  excerpt: "",
-  content: "",
-  heroImage: "",
-  tags: "",
-  vertical: "all",
-  status: "DRAFT",
-  readMinutes: 5,
-  author: "TechCulture AI",
-};
-
 export default function Blogs() {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [q, setQ] = useState("");
   const [searchQ, setSearchQ] = useState("");
@@ -28,10 +15,6 @@ export default function Blogs() {
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState(emptyForm);
-  const [editingId, setEditingId] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
 
   const load = useCallback(
     async (pageNum = page, query = searchQ) => {
@@ -63,63 +46,6 @@ export default function Blogs() {
   function runSearch() {
     setPage(1);
     setSearchQ(q.trim());
-  }
-
-  function openCreate() {
-    setEditingId(null);
-    setForm(emptyForm);
-    setError("");
-    setModalOpen(true);
-  }
-
-  function openEdit(post) {
-    setEditingId(post.id || post.slug);
-    setForm({
-      title: post.title || "",
-      slug: post.slug || "",
-      subtitle: post.subtitle || "",
-      excerpt: post.excerpt || "",
-      content: post.content || "",
-      heroImage: post.heroImage || "",
-      tags: (post.tags || []).join(", "),
-      vertical: post.vertical || "all",
-      status: post.status || "DRAFT",
-      readMinutes: post.readMinutes || 5,
-      author: post.author || "TechCulture AI",
-    });
-    setError("");
-    setModalOpen(true);
-  }
-
-  function closeModal() {
-    setModalOpen(false);
-    setEditingId(null);
-    setForm(emptyForm);
-  }
-
-  async function onSubmit(e) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      const payload = {
-        ...form,
-        readMinutes: Number(form.readMinutes) || 5,
-        tags: form.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      };
-      if (editingId) await api.updateBlog(editingId, payload);
-      else await api.createBlog(payload);
-      closeModal();
-      await load(editingId ? page : 1, searchQ);
-      if (!editingId) setPage(1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
   }
 
   async function onDelete(id) {
@@ -158,9 +84,9 @@ export default function Blogs() {
         <button className="btn-ghost !rounded-full" type="button" onClick={runSearch}>
           Search
         </button>
-        <button className="btn-primary !rounded-full" type="button" onClick={openCreate}>
+        <Link to="/blogs/new" className="btn-primary !rounded-full inline-flex items-center">
           New post
-        </button>
+        </Link>
       </>
     ),
     [q]
@@ -175,7 +101,7 @@ export default function Blogs() {
 
   return (
     <div className="space-y-6">
-      {error && !modalOpen && (
+      {error && (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
       )}
 
@@ -227,7 +153,7 @@ export default function Blogs() {
                         <button
                           className="btn-ghost !px-3 !py-1.5 text-xs"
                           type="button"
-                          onClick={() => openEdit(p)}
+                          onClick={() => navigate(`/blogs/${p.id || p.slug}/edit`)}
                         >
                           Edit
                         </button>
@@ -274,83 +200,6 @@ export default function Blogs() {
           </div>
         </div>
       </div>
-
-      <Modal
-        open={modalOpen}
-        title={editingId ? "Edit post" : "New post"}
-        onClose={closeModal}
-        wide
-      >
-        {error && <p className="mb-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-        <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-2">
-          {[
-            ["title", "Title"],
-            ["slug", "Slug"],
-            ["subtitle", "Subtitle"],
-            ["heroImage", "Hero image URL"],
-            ["author", "Author"],
-            ["tags", "Tags (comma separated)"],
-          ].map(([key, label]) => (
-            <div key={key}>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">{label}</label>
-              <input
-                className="input"
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                required={key === "title"}
-              />
-            </div>
-          ))}
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Vertical</label>
-            <select
-              className="input"
-              value={form.vertical}
-              onChange={(e) => setForm({ ...form, vertical: e.target.value })}
-            >
-              <option value="all">all</option>
-              <option value="brokers">brokers</option>
-              <option value="mfd">mfd</option>
-              <option value="nbfc">nbfc</option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Status</label>
-            <select
-              className="input"
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-            >
-              <option value="DRAFT">DRAFT</option>
-              <option value="PUBLISHED">PUBLISHED</option>
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Excerpt</label>
-            <textarea
-              className="input min-h-20"
-              value={form.excerpt}
-              onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Content (markdown)</label>
-            <textarea
-              className="input min-h-40 font-mono text-sm"
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-            />
-          </div>
-          <div className="md:col-span-2 flex gap-2 pt-1">
-            <button className="btn-primary" type="submit" disabled={busy}>
-              {busy ? "Saving…" : editingId ? "Update post" : "Create post"}
-            </button>
-            <button className="btn-ghost" type="button" onClick={closeModal}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }

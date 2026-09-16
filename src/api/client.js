@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
+export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
 function authHeaders() {
   const token = localStorage.getItem("tc_admin_token");
@@ -45,6 +45,22 @@ export const api = {
   updateBlog: (id, body) =>
     request(`/api/blogs/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   deleteBlog: (id) => request(`/api/blogs/${id}`, { method: "DELETE" }),
+  uploadImage: async (file) => {
+    const body = new FormData();
+    body.append("image", file);
+    const res = await fetch(`${API_BASE}/api/uploads/image`, {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+      },
+      body,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.message || "Upload failed");
+    }
+    return data;
+  },
   jobs: (params = {}) => {
     if (typeof params === "string") return request(`/api/careers${params}`);
     const qs = new URLSearchParams();
@@ -70,5 +86,3 @@ export const api = {
   deleteTeamMember: (id) => request(`/api/team/${id}`, { method: "DELETE" }),
   health: () => request("/api/health"),
 };
-
-export { API_BASE };

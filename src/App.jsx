@@ -4,6 +4,7 @@ import Shell from "./components/Shell";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Blogs from "./pages/Blogs";
+import BlogEditor from "./pages/BlogEditor";
 import Careers from "./pages/Careers";
 import Team from "./pages/Team";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,8 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="blogs" element={<Blogs />} />
+          <Route path="blogs/new" element={<BlogEditor />} />
+          <Route path="blogs/:id/edit" element={<BlogEditor />} />
           <Route path="careers" element={<Careers />} />
           <Route path="team" element={<Team />} />
         </Route>

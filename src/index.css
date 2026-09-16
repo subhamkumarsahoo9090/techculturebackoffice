@@ -89,3 +89,28 @@ body {
 .tc-scroll::-webkit-scrollbar-thumb:hover {
   background: #e94e20;
 }
+
+/* Quill rich editor */
+.blog-quill .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid #e8e6e1;
+  background: #fafbfc;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.blog-quill .ql-container.ql-snow {
+  border: none;
+  min-height: 360px;
+  font-size: 15px;
+}
+
+.blog-quill .ql-editor {
+  min-height: 360px;
+  line-height: 1.7;
+  color: #2e3545;
+}
+
+.blog-quill .ql-editor.ql-blank::before {
+  color: #94a3b8;
+  font-style: normal;
+}
