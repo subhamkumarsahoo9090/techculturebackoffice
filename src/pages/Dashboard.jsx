@@ -1,23 +1,36 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
+import { usePageTopNav } from "../hooks/usePageTopNav";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ blogs: 0, jobs: 0 });
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([api.health(), api.blogs(), api.jobs(), api.team()])
-      .then(([health, blogs, jobs, team]) => {
+    Promise.all([
+      api.health(),
+      api.blogs({ page: 1, limit: 1, status: "PUBLISHED" }),
+      api.jobs({ page: 1, limit: 1 }),
+      api.team(),
+    ])
+      .then(([health, publishedBlogs, jobs, team]) => {
         setStats({
-          blogs: health.blogs ?? blogs.total ?? 0,
+          blogs: health.blogs ?? 0,
           jobs: health.jobs ?? jobs.total ?? 0,
           team: health.team ?? team.count ?? 0,
-          published: (blogs.posts || []).filter((p) => p.status === "PUBLISHED").length,
+          published: publishedBlogs.total ?? 0,
         });
       })
       .catch((err) => setError(err.message));
   }, []);
+
+  usePageTopNav({
+    eyebrow: "Overview",
+    title: "Dashboard",
+    subtitle: "Blog · Careers · Team",
+    actions: null,
+  });
 
   const cards = [
     {
@@ -45,25 +58,21 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#FE602F]">Overview</p>
-        <h1 className="mt-1 text-3xl font-bold text-[#2E3545]">Dashboard</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          APIs power{" "}
-          <a className="font-semibold text-teal-700" href="http://localhost:3000/blog" target="_blank" rel="noreferrer">
-            /blog
-          </a>
-          ,{" "}
-          <a className="font-semibold text-teal-700" href="http://localhost:3000/careers" target="_blank" rel="noreferrer">
-            /careers
-          </a>
-          {" "}and{" "}
-          <a className="font-semibold text-teal-700" href="http://localhost:3000/team" target="_blank" rel="noreferrer">
-            /team
-          </a>
-          .
-        </p>
-      </div>
+      <p className="mb-6 text-sm text-slate-500">
+        APIs power{" "}
+        <a className="font-semibold text-teal-700" href="http://localhost:3000/blog" target="_blank" rel="noreferrer">
+          /blog
+        </a>
+        ,{" "}
+        <a className="font-semibold text-teal-700" href="http://localhost:3000/careers" target="_blank" rel="noreferrer">
+          /careers
+        </a>{" "}
+        and{" "}
+        <a className="font-semibold text-teal-700" href="http://localhost:3000/team" target="_blank" rel="noreferrer">
+          /team
+        </a>
+        .
+      </p>
 
       {error && (
         <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>

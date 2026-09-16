@@ -64,3 +64,28 @@ body {
   box-shadow: 0 0 0 3px rgba(254, 96, 47, 0.12);
   background: #fff;
 }
+
+/* Orange scrollbar — modal / scroll panels */
+.tc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #fe602f #ffe8df;
+}
+
+.tc-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tc-scroll::-webkit-scrollbar-track {
+  background: #ffe8df;
+  border-radius: 999px;
+}
+
+.tc-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff7a4d, #fe602f);
+  border-radius: 999px;
+}
+
+.tc-scroll::-webkit-scrollbar-thumb:hover {
+  background: #e94e20;
+}

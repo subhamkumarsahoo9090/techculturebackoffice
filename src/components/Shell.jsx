@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { TopNavProvider } from "../context/TopNavContext";
+import TopNav from "./TopNav";
 
 const links = [
   { to: "/", label: "Dashboard", end: true },
@@ -9,15 +11,9 @@ const links = [
   { to: "/team", label: "Team" },
 ];
 
-export default function Shell() {
-  const { admin, logout } = useAuth();
-  const navigate = useNavigate();
+function ShellInner() {
+  const { admin } = useAuth();
   const [open, setOpen] = useState(false);
-
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff_0%,#f0fdfa55_45%,#faf9f6_100%)]">
@@ -71,35 +67,25 @@ export default function Shell() {
           ))}
         </nav>
 
-        <div className="mt-auto shrink-0 border-t border-[#E8E6E1] p-4">
+        <div className="mt-auto shrink-0 border-t border-[#E8E6E1] px-4 py-4">
           <p className="truncate text-xs font-medium text-slate-500">{admin?.email}</p>
-          <button
-            className="btn-ghost mt-3 w-full !rounded-xl"
-            type="button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
         </div>
       </aside>
 
       <div className="flex min-h-screen min-w-0 flex-col lg:ml-64">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-[#E8E6E1] bg-white/90 px-4 py-3 backdrop-blur-md lg:hidden">
-          <button
-            type="button"
-            className="rounded-lg border border-[#E8E6E1] px-3 py-2 text-sm font-semibold text-[#2E3545]"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            Menu
-          </button>
-          <p className="text-sm font-semibold text-[#2E3545]">TechCulture AI Admin</p>
-        </header>
-
-        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8">
+        <TopNav onMenuClick={() => setOpen(true)} />
+        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-6">
           <Outlet />
         </main>
       </div>
     </div>
+  );
+}
+
+export default function Shell() {
+  return (
+    <TopNavProvider>
+      <ShellInner />
+    </TopNavProvider>
   );
 }

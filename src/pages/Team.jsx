@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import Modal from "../components/Modal";
+import { usePageTopNav } from "../hooks/usePageTopNav";
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || "http://localhost:3000";
 
-/** Relative /team/... paths live on the website, not on backoffice :5173 */
 function resolveImageUrl(url, name = "") {
   if (!url) return "";
   let value = String(url).trim();
@@ -110,19 +110,24 @@ export default function Team() {
     await load();
   }
 
+  const actions = useMemo(
+    () => (
+      <button className="btn-primary !rounded-full" type="button" onClick={openCreate}>
+        New member
+      </button>
+    ),
+    []
+  );
+
+  usePageTopNav({
+    eyebrow: "People",
+    title: "Our Team",
+    subtitle: `${members.length} members · powers /team page`,
+    actions,
+  });
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#FE602F]">People</p>
-          <h1 className="text-3xl font-bold text-[#2E3545]">Our Team</h1>
-          <p className="text-sm text-slate-500">{members.length} members · powers /team page</p>
-        </div>
-        <button className="btn-primary" type="button" onClick={openCreate}>
-          New member
-        </button>
-      </div>
-
       {error && !modalOpen && (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
       )}

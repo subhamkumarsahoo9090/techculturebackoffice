@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Blogs from "./pages/Blogs";
 import Careers from "./pages/Careers";
 import Team from "./pages/Team";
+import NotFound from "./pages/NotFound";
 
 function PrivateRoute({ children }) {
   const { admin, loading } = useAuth();
@@ -38,7 +39,7 @@ export default function App() {
           <Route path="careers" element={<Careers />} />
           <Route path="team" element={<Team />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>
   );

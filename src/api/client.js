@@ -28,14 +28,34 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
   me: () => request("/api/auth/me"),
-  blogs: (params = "") => request(`/api/blogs${params}`),
+  blogs: (params = {}) => {
+    if (typeof params === "string") return request(`/api/blogs${params}`);
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        qs.set(key, String(value));
+      }
+    });
+    const query = qs.toString();
+    return request(`/api/blogs${query ? `?${query}` : ""}`);
+  },
   getBlog: (id) => request(`/api/blogs/${id}`),
   createBlog: (body) =>
     request("/api/blogs", { method: "POST", body: JSON.stringify(body) }),
   updateBlog: (id, body) =>
     request(`/api/blogs/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   deleteBlog: (id) => request(`/api/blogs/${id}`, { method: "DELETE" }),
-  jobs: () => request("/api/careers"),
+  jobs: (params = {}) => {
+    if (typeof params === "string") return request(`/api/careers${params}`);
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        qs.set(key, String(value));
+      }
+    });
+    const query = qs.toString();
+    return request(`/api/careers${query ? `?${query}` : ""}`);
+  },
   getJob: (id) => request(`/api/careers/${id}`),
   createJob: (body) =>
     request("/api/careers", { method: "POST", body: JSON.stringify(body) }),
